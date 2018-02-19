@@ -24,10 +24,12 @@ class OrderFormRequest extends FormRequest
     public function rules()
     {
         return [
-            'start_address' => 'required|string|max:255',
-            'end_address' => 'required|string|max:255',
-            'start_time' => 'date_format:"h:i"',
-//            'driver_id' => 'required|integer'
+            'origin_address' => 'required|string|max:255',
+            'destination_address' => 'required|string|max:255',
+            'origin_location' => 'required|json',
+            'destination_location' => 'required|json',
+            'start_time' => 'date_format:"H:i"',
+            'driver_id' => 'required|integer'
         ];
     }
 }

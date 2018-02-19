@@ -15,10 +15,10 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->increments('id');
-            $table->json('start_location');
-            $table->json('end_location');
-            $table->string('start_address');
-            $table->string('end_address');
+            $table->string('origin_address');
+            $table->json('origin_location');
+            $table->string('destination_address');
+            $table->json('destination_location');
             $table->time('start_time');
             $table->integer('driver_id')->unsigned();
             $table->string('passenger_phone')->nullable();

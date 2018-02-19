@@ -10,8 +10,8 @@ class Order extends Model
      * @var array
      */
     protected $fillable = [
-        'start_location', 'end_location', 'start_address', 'end_address',
-        'start_time', 'passenger_phone', 'status'
+        'origin_location', 'destination_location', 'origin_address', 'destination_address',
+        'start_time', 'passenger_phone', 'status', 'driver_id'
     ];
 
     public function driver()

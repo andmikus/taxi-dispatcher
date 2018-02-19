@@ -7,28 +7,43 @@
                 <div class="card">
                     <div class="card-header">New Order</div>
 
-                    {!! Form::open(['route' => 'order.store', 'class' => 'form-horizontal']) !!}
+                    {!! Form::open(['route' => 'order.store', 'class' => 'form-horizontal', 'id' => 'order-form']) !!}
                         <div class="card-body">
 
                             <div class="form-group row">
-                                <label for="start_address" class="col-lg-4 col-form-label text-lg-right">Origin address</label>
+                                <label for="origin_address" class="col-lg-4 col-form-label text-lg-right">Origin address</label>
                                 <div class="col-lg-6">
-                                    {!! $autocompleteHelper->render($origAutocomplete); !!}
-                                    @if ($errors->has('start_address'))
+                                    {!! $autocompleteHelper->renderHtml($origAutocomplete); !!}
+                                    {!! Form::hidden('origin_location', old('origin_location'), ['id' => 'origin-location']) !!}
+                                    <span class="valid-feedback" id="origin-location-feedback">{{ old('origin_location') }}</span>
+                                    @if ($errors->has('origin_address'))
                                         <span class="invalid-feedback">
-                                            <strong>{{ $errors->first('start_address') }}</strong>
+                                            <strong>{{ $errors->first('origin_address') }}</strong>
+                                        </span>
+                                    @endif
+                                    @if ($errors->has('origin_location'))
+                                        <span class="invalid-feedback">
+                                            <strong>{{ $errors->first('origin_location') }}</strong>
                                         </span>
                                     @endif
                                 </div>
                             </div>
 
+
                             <div class="form-group row">
-                                <label for="end_address" class="col-lg-4 col-form-label text-lg-right">Destination address</label>
+                                <label for="destination_address" class="col-lg-4 col-form-label text-lg-right">Destination address</label>
                                 <div class="col-lg-6">
-                                    {!! $autocompleteHelper->render($destAutocomplete); !!}
-                                    @if ($errors->has('end_address'))
+                                    {!! $autocompleteHelper->renderHtml($destAutocomplete); !!}
+                                    {!! Form::hidden('destination_location', old('destination_location'), ['id' => 'destination-location']) !!}
+                                    <span class="valid-feedback" id="destination-location-feedback">{{ old('destination_location') }}</span>
+                                    @if ($errors->has('destination_address'))
                                         <span class="invalid-feedback">
-                                            <strong>{{ $errors->first('end_address') }}</strong>
+                                            <strong>{{ $errors->first('destination_address') }}</strong>
+                                        </span>
+                                    @endif
+                                    @if ($errors->has('destination_location'))
+                                        <span class="invalid-feedback">
+                                            <strong>{{ $errors->first('destination_location') }}</strong>
                                         </span>
                                     @endif
                                 </div>
@@ -109,6 +124,25 @@
     {!! $dataTable->scripts() !!}
 
     <script type="text/javascript">
+        $('#order-form').on('keyup keypress', function(e) {
+            var keyCode = e.keyCode || e.which;
+            if (keyCode === 13) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        $('.address-input').each(function() {
+            var target = $(this).attr('id');
+            $('#'+target).change(function() {
+                if ($(this).val() == '') {
+                    $(this).removeClass('is-valid');
+                    $('#'+target+'-location-feedback').html('');
+                    $('#'+target+'-location').val('');
+                }
+            });
+        });
+
     </script>
 
 @endpush
