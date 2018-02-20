@@ -59,4 +59,37 @@ class OrderController extends Controller {
 
         return redirect()->route('order.index');
     }
+
+    public function edit(Order $order, DriversDataTable $dataTable)
+    {
+        $origAutocomplete = $this->mapService->placeAutocomplete('origin', $order->origin_address);
+        $destAutocomplete = $this->mapService->placeAutocomplete('destination', $order->destination_address);
+
+        $autocompleteHelper = $this->mapService->placeAutoconmpleteBuilder();
+        $apiHelper = $this->mapService->apiBuilder();
+
+        return $dataTable->render('order.edit',
+            compact('order', 'apiHelper', 'autocompleteHelper', 'origAutocomplete', 'destAutocomplete', 'dataTable'));
+    }
+
+    public function update(Order $order, OrderFormRequest $request)
+    {
+        try {
+
+            DB::beginTransaction();
+
+            $order->fill($request->all());
+            $order->save();
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+
+            logger()->error($e->getMessage());
+
+            return redirect()->back()->withInput();
+        }
+
+        return redirect()->route('order.index');
+    }
 }

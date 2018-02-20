@@ -3,10 +3,21 @@
 namespace App\DataTables;
 
 use App\Entities\Order;
+use App\Repos\GoogleMapService;
 use Yajra\DataTables\Services\DataTable;
 
 class OrdersDataTable extends DataTable
 {
+    /**
+     * @var GoogleMapService
+     */
+    private $mapService;
+
+    public function __construct(GoogleMapService $mapService)
+    {
+        $this->mapService = $mapService;
+    }
+
     /**
      * Build DataTable class.
      *
@@ -15,7 +26,23 @@ class OrdersDataTable extends DataTable
      */
     public function dataTable($query)
     {
-        return datatables($query);
+        return datatables($query)
+            ->editColumn('origin', function(Order $order) {
+                $map = $this->mapService->map('origin', $order->origin_location);
+                $staticHelper = $this->mapService->staticBuilder();
+
+                return $order->origin_address . '<br><img src="' . $staticHelper->render(   $map) . '" />';
+            })
+            ->editColumn('destination', function(Order $order) {
+                $map = $this->mapService->map('origin', $order->destination_location);
+                $staticHelper = $this->mapService->staticBuilder();
+
+                return $order->destination_address . '<br><img src="' . $staticHelper->render($map) . '" />';
+            })
+            ->addColumn('action', function(Order $order) {
+                return view('order.action', compact('order'));
+            })
+            ->rawColumns(['origin', 'destination', 'action']);
     }
 
     /**
@@ -56,8 +83,8 @@ class OrdersDataTable extends DataTable
     {
         return [
             'id',
-            'origin_address',
-            'destination_address',
+            'origin',
+            'destination',
             'start_time',
             'status',
         ];
