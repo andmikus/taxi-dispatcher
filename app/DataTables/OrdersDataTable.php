@@ -39,10 +39,19 @@ class OrdersDataTable extends DataTable
 
                 return $order->destination_address . '<br><img src="' . $staticHelper->render($map) . '" />';
             })
+            ->addColumn('distance', function (Order $order) {
+                $distanceMatrix = $this->mapService->distanceMatrix($order->origin_address, $order->destination_address);
+                $distanceScope = $this->mapService->getDistance($distanceMatrix);
+                $durationScope = $this->mapService->getDuration($distanceMatrix);
+
+                return '<span class="nobr">' . join(', ', $distanceScope)
+                    . '</span>;<br><span class="nobr">'
+                    . join(', ', $durationScope) . '</span>';
+            })
             ->addColumn('action', function(Order $order) {
                 return view('order.action', compact('order'));
             })
-            ->rawColumns(['origin', 'destination', 'action']);
+            ->rawColumns(['origin', 'destination', 'distance', 'action']);
     }
 
     /**
@@ -70,6 +79,7 @@ class OrdersDataTable extends DataTable
         return $this->builder()
             ->columns($this->getColumns())
             ->minifiedAjax()
+            ->addColumn(['name' => 'distance', 'title' => 'Distance', 'data' => 'distance'])
             ->addAction(['width' => '80px', 'class' => 'text-center'])
             ->parameters($this->getBuilderParameters());
     }

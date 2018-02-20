@@ -1,5 +1,6 @@
 <?php namespace App\Repos;
 
+use Cache\Adapter\Predis\PredisCachePool;
 use Ivory\GoogleMap\Map;
 use Ivory\GoogleMap\Event\Event;
 use Http\Adapter\Guzzle6\Client;
@@ -9,16 +10,30 @@ use Ivory\GoogleMap\Place\Autocomplete;
 use Ivory\GoogleMap\Helper\Builder\ApiHelperBuilder;
 use Ivory\GoogleMap\Place\AutocompleteComponentType;
 use Http\Message\MessageFactory\GuzzleMessageFactory;
+use Ivory\GoogleMap\Service\Base\Distance;
+use Ivory\GoogleMap\Service\Base\Duration;
+use Ivory\GoogleMap\Service\Base\Location\AddressLocation;
+use Ivory\GoogleMap\Service\DistanceMatrix\DistanceMatrixService;
+use Ivory\GoogleMap\Service\DistanceMatrix\Request\DistanceMatrixRequest;
 use Ivory\GoogleMap\Service\Geocoder\GeocoderService;
 use Ivory\GoogleMap\Helper\Builder\StaticMapHelperBuilder;
 use Ivory\GoogleMap\Helper\Builder\PlaceAutocompleteHelperBuilder;
 use Ivory\GoogleMap\Service\Geocoder\Request\GeocoderAddressRequest;
+use Ivory\GoogleMap\Service\Serializer\SerializerBuilder;
 
 class GoogleMapService {
+
+    protected $psr6Pool;
 
     protected $defaultLocation = [
         "lat" => 54.686076, "lng" => 25.287760
     ];
+
+    public function __construct()
+    {
+        $client = new \Predis\Client(config('database.redis.default'));
+        $this->psr6Pool = new PredisCachePool($client);
+    }
 
     public function placeAutocomplete($target, $default = '')
     {
@@ -106,14 +121,58 @@ class GoogleMapService {
         return new Coordinate(array_get($prop, 'lat'), array_get($prop, 'lng'));
     }
 
+    public function distanceMatrix($originAddress, $destinationAddress)
+    {
+        $distanceMatrix = new DistanceMatrixService(
+            new Client(),
+            new GuzzleMessageFactory(),
+            SerializerBuilder::create($this->psr6Pool)
+        );
+
+        return $distanceMatrix->process(new DistanceMatrixRequest(
+            [new AddressLocation($originAddress)],
+            [new AddressLocation($destinationAddress)]
+        ));
+    }
+
+    public function getDistance($distanceMatrix)
+    {
+        $distance = [];
+
+        foreach ($distanceMatrix->getRows() as $row) {
+            foreach ($row->getElements() as $element) {
+                $distance[] = $element->getDistance();
+            }
+        }
+
+        return array_map(function(Distance $distance) {
+            return $distance->getText();
+        }, $distance);
+    }
+
+    public function getDuration($distanceMatrix)
+    {
+        $duration = [];
+
+        foreach ($distanceMatrix->getRows() as $row) {
+            foreach ($row->getElements() as $element) {
+                $duration[] = $element->getDuration();
+            }
+        }
+
+        return array_map(function(Duration $duration) {
+            return $duration->getText();
+        }, $duration);
+    }
+
     public function coordinates($address)
     {
         $request = new GeocoderAddressRequest($address);
 
         $geocoder = new GeocoderService(
             new Client(),
-            new GuzzleMessageFactory()
-//            SerializerBuilder::create($psr6Pool)
+            new GuzzleMessageFactory(),
+            SerializerBuilder::create($this->psr6Pool)
         );
 
         $response = $geocoder->geocode($request);
