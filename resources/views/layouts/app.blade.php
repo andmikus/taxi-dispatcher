@@ -21,19 +21,32 @@
             <a class="navbar-brand" href="{{ url('/') }}">
                 {{ config('app.name', 'Laravel') }}
             </a>
+
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                     aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-                <ul class="navbar-nav">
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
                     @if (Auth::guest())
                         <li class="nav-item"><a href="{{ route('login') }}" class="nav-link">Login</a></li>
                         @if (firstUser())
                             <li class="nav-item"><a href="{{ route('register') }}" class="nav-link">Register</a></li>
                         @endif
                     @else
+                        @if( ! auth()->user()->isDriver())
+                            @if(auth()->user()->isAdmin())
+                                <li class="nav-item {!! (\Route::is('user.*')) ? 'active' : '' !!}">
+                                    <a class="nav-link" href="{!! route('user.index') !!}">Users</a>
+                                </li>
+                            @endif
+                            <li class="nav-item {!! (\Route::is('order.*')) ? 'active' : '' !!}">
+                                <a class="nav-link" href="{!! route('order.index') !!}">Orders</a>
+                            </li>
+                        @endif
+                </ul>
+                <ul class="navbar-nav">
                         <li class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown"
                                aria-haspopup="true" aria-expanded="false">
