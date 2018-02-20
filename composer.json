@@ -1,8 +1,9 @@
 {
-    "name": "laravel/laravel",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
-    "license": "MIT",
+    "name": "andmikus/taxi-dispatcher",
+    "author": "Andrius Mickus <andmikus@outlook.com>",
+    "description": "A Taxi dispatcher system",
+    "keywords": ["taxi", "dispatcher", "laravel", "googlemap"],
+    "license": "unlicensed",
     "type": "project",
     "require": {
         "php": ">=7.1.0",
