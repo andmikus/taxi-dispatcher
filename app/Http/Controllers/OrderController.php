@@ -78,8 +78,8 @@ class OrderController extends Controller {
 
             DB::beginTransaction();
 
-            $order->fill($request->all());
-            $order->save();
+                $order->fill($request->all());
+                $order->save();
 
             DB::commit();
 

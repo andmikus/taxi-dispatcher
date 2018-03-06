@@ -81,7 +81,9 @@
 
 {!! $apiHelper->render([$origAutocomplete, $destAutocomplete]); !!}
 
-</div>
+@isset($order)
+    {!! Form::hidden('driver_id', $order->driver_id) !!}
+@endisset
 
 <div class="row justify-content-center">
     <div class="col-md-8">

@@ -45,7 +45,8 @@ class DriversDataTable extends DataTable
     {
         return $this->builder()
             ->columns($this->getColumns())
-            ->minifiedAjax()
+            ->ajax(url()->current())
+//            ->minifiedAjax(url()->current())
             ->addAction(['width' => '80px', 'class' => 'text-center'])
             ->parameters($this->getBuilderParameters());
     }
@@ -67,6 +68,7 @@ class DriversDataTable extends DataTable
     public function getBuilderParameters()
     {
         return [
+            'serverSide'    => FALSE,
             'info'    => FALSE,
             'dom'     => '',
             'buttons' => '',

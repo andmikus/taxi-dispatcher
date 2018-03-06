@@ -18,7 +18,7 @@
                             {!! link_to_route('order.create', 'New order', null, ['class' => 'btn btn-primary']) !!}
                         </p>
 
-                        {!! $dataTable->table(['class' => 'table table-striped table-bordered table-hover', 'cellspacing' => 0]) !!}
+                        {!! $dataTable->table(['class' => 'table table-striped table-bordered', 'cellspacing' => 0]) !!}
 
                     </div>
                 </div>

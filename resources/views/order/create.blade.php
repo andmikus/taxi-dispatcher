@@ -17,6 +17,7 @@
                                     {!! Form::reset('Reset', ['class' => 'btn']) !!}
                                 </li>
                             </ul>
+
                         {!! Form::close() !!}
                     </div>
                 </div>

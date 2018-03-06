@@ -29,7 +29,7 @@ class OrderFormRequest extends FormRequest
             'origin_location' => 'required|json',
             'destination_location' => 'required|json',
             'start_time' => 'date_format:"H:i"',
-            'driver_id' => 'required|integer'
+//            'driver_id' => 'required|integer'
         ];
     }
 }
